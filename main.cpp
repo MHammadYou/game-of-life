@@ -14,7 +14,7 @@ public:
     m_Y = y;
   }
 
-  void getNeighbours(Cell& world)
+  void getNeighbours(Cell* world[10][10])
   {
     int neighbours[8][2] = {
       {m_X - 1, m_Y - 1}, {m_X - 1, m_Y}, {m_X - 1, m_Y + 1},
@@ -63,7 +63,7 @@ public:
 
   void doSomething()
   {
-//    m_World[2][2]->getNeighbours(&m_World);
+    m_World[2][2]->getNeighbours(m_World);
   }
 
   void logWorld()
@@ -88,6 +88,7 @@ public:
     {
       std::cout << "___";
     }
+    std::cout << std::endl;
   }
 };
 
@@ -103,5 +104,5 @@ int main()
 {
   World world;
   world.logWorld();
-
+  world.doSomething();
 }
