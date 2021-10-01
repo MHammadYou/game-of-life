@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 class Cell
 {
@@ -14,16 +15,21 @@ public:
     m_Y = y;
   }
 
-  void getNeighbours(Cell* world[10][10])
+  void getNeighbours(int worldSize)
   {
-    int neighbours[8][2] = {
+
+    std::vector< std::vector<int> > neighbours;
+
+    int possibleNeighbours[8][2] = {
       {m_X - 1, m_Y - 1}, {m_X - 1, m_Y}, {m_X - 1, m_Y + 1},
       {m_X, m_Y - 1},                     {m_X, m_Y + 1},
       {m_X + 1, m_Y - 1}, {m_X + 1, m_Y}, {m_X + 1, m_Y + 1},};
 
     for (int i = 0; i < 8; i++)
     {
-      std::cout << "X: " << neighbours[i][0] << "  Y: " << neighbours[i][1] << std::endl;
+      if (!(possibleNeighbours[i][0] < 0 || possibleNeighbours[i][1] < 0) || possibleNeighbours[i][0] > worldSize || possibleNeighbours[i][1] > worldSize) {
+        std::cout << "X: " << possibleNeighbours[i][0] << "  Y: " << possibleNeighbours[i][1] << std::endl;
+      }
     }
   }
 
@@ -47,7 +53,8 @@ public:
 class World
 {
 private:
-  Cell* m_World[10][10];
+  static const int worldSize = 10;
+  Cell* m_World[worldSize][worldSize];
 
 public:
   World() : m_World() {
@@ -63,7 +70,7 @@ public:
 
   void doSomething()
   {
-    m_World[2][2]->getNeighbours(m_World);
+    m_World[10][10]->getNeighbours(worldSize);
   }
 
   void logWorld()
