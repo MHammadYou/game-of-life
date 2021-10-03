@@ -27,8 +27,10 @@ public:
 
     for (int i = 0; i < 8; i++)
     {
-      if (!(possibleNeighbours[i][0] < 0 || possibleNeighbours[i][1] < 0) || possibleNeighbours[i][0] > worldSize || possibleNeighbours[i][1] > worldSize) {
-        std::cout << "X: " << possibleNeighbours[i][0] << "  Y: " << possibleNeighbours[i][1] << std::endl;
+      const int x = possibleNeighbours[i][0];
+      const int y = possibleNeighbours[i][1];
+      if (!(x < 0 || x > worldSize - 1 || y > worldSize - 1 || y < 0)) {
+        std::cout << "X: " << x << "  Y: " << y << std::endl;
       }
     }
   }
@@ -70,7 +72,8 @@ public:
 
   void doSomething()
   {
-    m_World[10][10]->getNeighbours(worldSize);
+//    m_World[10][10]->getNeighbours(worldSize);
+    m_World[4][0]->getNeighbours(5);
   }
 
   void logWorld()
