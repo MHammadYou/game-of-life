@@ -7,6 +7,11 @@ private:
   std::string m_State;
   int m_X, m_Y;
 
+  void setState(const std::string& newState)
+  {
+    m_State = newState;
+  }
+
 public:
   Cell(const std::string& state, int x, int y)
   {
@@ -44,25 +49,29 @@ public:
 
   }
 
-
   std::string getState()
   {
     return m_State;
   }
 
-  void setState(const std::string& newState)
+  void kill()
   {
-    m_State = newState;
+    setState(" . ");
   }
 
-  int getX() const
+  void birth()
   {
-    return m_X;
+    setState(" # ");
   }
 
-  int getY() const
+  bool isAlive()
   {
-    return m_Y;
+    return getState() == " # ";
+  }
+
+  bool isDead()
+  {
+    return getState() == " . ";
   }
 };
 
@@ -77,9 +86,9 @@ public:
 
   static void populationCrisis(Cell* cell, int aliveNeighbours)
   {
-    if ((aliveNeighbours < 2 || aliveNeighbours > 3) && cell->getState() == " # ")
+    if ((aliveNeighbours < 2 || aliveNeighbours > 3) && cell->isAlive())
     {
-      cell->setState(" . ");
+      cell->kill();
     }
   }
 
@@ -90,9 +99,9 @@ public:
 
   static void birth(Cell* cell, int aliveNeighbours)
   {
-    if (aliveNeighbours == 3 && cell->getState() == " . ")
+    if (aliveNeighbours == 3 && cell->isDead())
     {
-      cell->setState(" # ");
+      cell->birth();
     }
   }
 
@@ -117,20 +126,20 @@ public:
         m_World[i][j] = new Cell(" . ", i, j);
       }
     }
-    m_World[5][1]->setState(" # ");
-    m_World[2][2]->setState(" # ");
-    m_World[3][2]->setState(" # ");
-    m_World[7][4]->setState(" # ");
-    m_World[9][1]->setState(" # ");
-    m_World[2][8]->setState(" # ");
-    m_World[2][6]->setState(" # ");
-    m_World[2][7]->setState(" # ");
-    m_World[2][8]->setState(" # ");
-    m_World[1][6]->setState(" # ");
-    m_World[4][6]->setState(" # ");
-    m_World[1][3]->setState(" # ");
-    m_World[0][5]->setState(" # ");
-    m_World[1][2]->setState(" # ");
+    m_World[5][1]->birth();
+    m_World[2][2]->birth();
+    m_World[3][2]->birth();
+    m_World[7][4]->birth();
+    m_World[9][1]->birth();
+    m_World[2][8]->birth();
+    m_World[2][6]->birth();
+    m_World[2][7]->birth();
+    m_World[2][8]->birth();
+    m_World[1][6]->birth();
+    m_World[4][6]->birth();
+    m_World[1][3]->birth();
+    m_World[0][5]->birth();
+    m_World[1][2]->birth();
   }
 
   std::vector< Cell* > getAliveNeighbours(int _i, int _j)
@@ -142,7 +151,7 @@ public:
     for (int i = 0; i < neighbours.size(); i++)
     {
       Cell* cell = m_World[neighbours[i][0]][neighbours[i][1]];
-      if (cell->getState() == " # ")
+      if (cell->isAlive())
       {
         aliveNeighbours.push_back(cell);
       }
