@@ -30,13 +30,14 @@ public:
       {m_X, m_Y - 1},                     {m_X, m_Y + 1},
       {m_X + 1, m_Y - 1}, {m_X + 1, m_Y}, {m_X + 1, m_Y + 1},};
 
-    for (int i = 0; i < 8; i++)
+    for (auto & possibleNeighbour : possibleNeighbours)
     {
-      const int x = possibleNeighbours[i][0];
-      const int y = possibleNeighbours[i][1];
+      const int x = possibleNeighbour[0];
+      const int y = possibleNeighbour[1];
 
 
-      if (!(x < 0 || x > worldSize - 1 || y > worldSize - 1 || y < 0)) {
+      if (!(x < 0 || x > worldSize - 1 || y > worldSize - 1 || y < 0))
+      {
 
         std::vector<int> neighbour;
         neighbour.push_back(x);
@@ -79,10 +80,10 @@ public:
 class Rules
 {
 
+public:
+
 //  Any live cell with fewer than two live neighbours dies, as if by underpopulation.
 //  Any live cell with more than three live neighbours dies, as if by overpopulation.
-
-public:
 
   static void populationCrisis(Cell* cell, int aliveNeighbours)
   {
@@ -93,8 +94,6 @@ public:
   }
 
 //  Any live cell with two or three live neighbours lives on to the next generation.
-
-
 //  Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
 
   static void birth(Cell* cell, int aliveNeighbours)
@@ -104,7 +103,6 @@ public:
       cell->birth();
     }
   }
-
 
 };
 
@@ -116,44 +114,55 @@ private:
   Cell* m_World[worldSize][worldSize];
 
 public:
-  World() : m_World()
+  explicit World(int size) : m_World()
   {
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < worldSize; i++)
     {
-      for (int j = 0; j < 10; j++)
+      for (int j = 0; j < worldSize; j++)
       {
         m_World[i][j] = new Cell(" . ", i, j);
       }
     }
-    m_World[5][1]->birth();
-    m_World[2][2]->birth();
-    m_World[3][2]->birth();
-    m_World[7][4]->birth();
-    m_World[9][1]->birth();
-    m_World[2][8]->birth();
-    m_World[2][6]->birth();
-    m_World[2][7]->birth();
-    m_World[2][8]->birth();
-    m_World[1][6]->birth();
-    m_World[4][6]->birth();
-    m_World[1][3]->birth();
-    m_World[0][5]->birth();
-    m_World[1][2]->birth();
+
+    const int liveCellsCount = 15;
+
+    int initialCells[liveCellsCount][2] = {{5, 1},
+                               {1, 1},
+                               {2, 2},
+                               {3, 2},
+                               {7, 4},
+                               {9, 1},
+                               {2, 8},
+                               {2, 6},
+                               {2, 7},
+                               {1, 6},
+                               {4, 6},
+                               {1, 3},
+                               {0, 5},
+                               {1, 2},
+                               {0, 6}};
+
+    for (auto & initialCell : initialCells)
+    {
+      const int _i = initialCell[0];
+      const int _j = initialCell[1];
+      m_World[_i][_j]->birth();
+    }
   }
 
-  std::vector< Cell* > getAliveNeighbours(int _i, int _j)
+  int getAliveNeighbours(int _i, int _j)
   {
     std::vector< std::vector<int> > neighbours = m_World[_i][_j]->getNeighbours(worldSize);
-    std::vector< Cell* > aliveNeighbours;
+    int aliveNeighbours = 0;
 
 
-    for (int i = 0; i < neighbours.size(); i++)
+    for (auto & neighbour : neighbours)
     {
-      Cell* cell = m_World[neighbours[i][0]][neighbours[i][1]];
+      Cell* cell = m_World[neighbour[0]][neighbour[1]];
       if (cell->isAlive())
       {
-        aliveNeighbours.push_back(cell);
+        aliveNeighbours++;
       }
     }
 
@@ -166,9 +175,9 @@ public:
     {
       for (int j = 0; j < worldSize; j++)
       {
-        const std::vector<Cell*> aliveNeighbours = getAliveNeighbours(i, j);
-        Rules::birth(m_World[i][j], aliveNeighbours.size());
-        Rules::populationCrisis(m_World[i][j], aliveNeighbours.size());
+        int totalAliveNeighbours = getAliveNeighbours(i, j);
+        Rules::birth(m_World[i][j], totalAliveNeighbours);
+        Rules::populationCrisis(m_World[i][j], totalAliveNeighbours);
       }
     }
 
@@ -182,12 +191,12 @@ public:
       std::cout << "___";
     }
     std::cout << std::endl;
-    for (int i = 0; i < 10; i++)
+    for (auto & i : m_World)
     {
       std::cout << "| ";
-      for (int j = 0; j < 10; j++)
+      for (auto & j : i)
       {
-        std::cout << m_World[i][j]->getState();
+        std::cout << j->getState();
       }
       std::cout << " |" << std::endl;
     }
@@ -204,9 +213,9 @@ public:
 
 int main()
 {
-  World world;
+  World world{10};
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < 50; i++)
   {
     world.logWorld();
     world.applyRules();
